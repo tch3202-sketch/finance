@@ -119,7 +119,7 @@
 
     <script>
         // 💥 請在此替換為您從 Google Apps Script 複製來的網頁應用程式網址 💥
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzwI_t-QkfZ9A3LQ8cf7K6xK9rQdNbvIK_r3gL3feF6LuOM1GNEEKgYZ7zGhHU6foT-/exec';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyohGkE6ND-3qd3yTUtA4687N7m8U65qCLY0z6EFZ4f_H48nbqG5OUNqJnMRcKrfKTc/exec';
         
         let currentType = '收入';
         let fullHistoryData = []; 
@@ -155,15 +155,13 @@
                 reasonLabel.innerText = '支出事由';
             }
         }
-        // 全新 JSONP 連線版本：徹底解決跨網域 (CORS) 導致卡在連線中、連不上的問題
-function fetchDataFromSheet() {
+       async function fetchDataFromSheet() {
     document.getElementById('filterStatus').innerText = '正在同步資料庫最新資訊...';
-    
-    // 建立一個隨機的臨時函式名稱
-    const callbackName = 'jsonp_' + Math.round(100000 * Math.random());
-    
-    // 在全域動態註冊這個回呼函式，當 Google 回傳資料時會自動觸發它
-    window[callbackName] = function(result) {
+    try {
+        // 使用最直覺的 fetch，並在網址後方精準補上參數
+        const response = await fetch(`${WEB_APP_URL}?action=getData`);
+        const result = await response.json();
+        
         // 1. 渲染結餘
         document.getElementById('balanceDisplay').innerText = `$${result.balance.toLocaleString()}`;
         
@@ -174,10 +172,14 @@ function fetchDataFromSheet() {
         fullHistoryData = result.history;
         filterData();
         
-        // 清理動態產生的標籤，維持網頁效能
-        document.body.removeChild(script);
-        delete window[callbackName];
-    };
+        // 成功後將底部提示文字改掉
+        document.getElementById('filterStatus').innerText = '📊 連線完成';
+    } catch (error) {
+        document.getElementById('filterStatus').innerText = '❌ 無法與雲端資料庫建立連線';
+        console.error('連線發生錯誤:', error);
+    }
+}
+
 
     // 透過動態建立 script 標籤的方式來讀取 Google 資料，這是最有效規避 CORS 阻擋的業界標準做法
     const script = document.createElement('script');
