@@ -182,6 +182,18 @@ function fetchDataFromSheet() {
         delete window[callbackName];
     };
 
+    // 補齊這段：動態建立 script 標籤向 Google 索取資料
+    const script = document.createElement('script');
+    script.src = `${WEB_APP_URL}?action=getData&callback=${callbackName}`;
+    
+    script.onerror = function() {
+        document.getElementById('filterStatus').innerText = '❌ 無法與雲端資料庫建立連線';
+    };
+    
+    document.body.appendChild(script);
+}
+
+
     // 關鍵做法：不使用 fetch，而是直接在網頁底部塞入一個臨時的 <script> 標籤外連至 Google 
     const script = document.createElement('script');
     script.src = `${WEB_APP_URL}?action=getData&callback=${callbackName}`;
