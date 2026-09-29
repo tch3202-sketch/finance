@@ -119,7 +119,7 @@
 
     <script>
         // 💥 請在此替換為您從 Google Apps Script 複製來的網頁應用程式網址 💥
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyohGkE6ND-3qd3yTUtA4687N7m8U65qCLY0z6EFZ4f_H48nbqG5OUNqJnMRcKrfKTc/exec';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzbXGa91-In2P8--N6WC7ecL81heTNancM4vJv0HsRaLVs8ev82AWAHNuv0QyWLXnKE/exec';
         
         let currentType = '收入';
         let fullHistoryData = []; 
@@ -155,29 +155,43 @@
                 reasonLabel.innerText = '支出事由';
             }
         }
-       async function fetchDataFromSheet() {
+       // 完美繞過所有學校帳戶與網域 CORS 阻擋的動態對接版本
+function fetchDataFromSheet() {
     document.getElementById('filterStatus').innerText = '正在同步資料庫最新資訊...';
-    try {
-        // 使用最直覺的 fetch，並在網址後方精準補上參數
-        const response = await fetch(`${WEB_APP_URL}?action=getData`);
-        const result = await response.json();
-        
-        // 1. 渲染結餘
+    
+    // 動態製造一個全域唯一的隨機函式名稱，防止多次查詢時發生衝突
+    const callbackName = 'jsonp_' + Math.round(100000 * Math.random());
+    
+    // 當 Google 成功把資料傳回來時，會主動呼叫這個全域功能
+    window[callbackName] = function(result) {
+        // 1. 渲染頂端大卡片的結餘金額
         document.getElementById('balanceDisplay').innerText = `$${result.balance.toLocaleString()}`;
         
-        // 2. 動態更新社員下拉選單
+        // 2. 動態更新社員下拉選單（將 5 位社員的名字塞進去）
         updateMemberDropdown(result.members);
         
         // 3. 渲染收支歷史紀錄
         fullHistoryData = result.history;
         filterData();
         
-        // 成功後將底部提示文字改掉
+        // 4. 更新底部的連線文字狀態
         document.getElementById('filterStatus').innerText = '📊 連線完成';
-    } catch (error) {
-        document.getElementById('filterStatus').innerText = '❌ 無法與雲端資料庫建立連線';
-        console.error('連線發生錯誤:', error);
-    }
+        
+        // 執行完畢後自我銷毀，釋放手機網頁效能與記憶體空間
+        document.body.removeChild(script);
+        delete window[callbackName];
+    };
+
+    // 關鍵做法：不使用 fetch，而是直接在網頁底部塞入一個臨時的 <script> 標籤外連至 Google 
+    const script = document.createElement('script');
+    script.src = `${WEB_APP_URL}?action=getData&callback=${callbackName}`;
+    
+    // 連線發生不可預期斷線時的防呆提示
+    script.onerror = function() {
+        document.getElementById('filterStatus').innerText = '❌ 無法與雲端資料庫建立連線，請確認網路環境';
+    };
+    
+    document.body.appendChild(script);
 }
 
 
