@@ -4,317 +4,993 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>桃園國際民俗舞社 - 經費收支系統</title>
+
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 15px; background-color: #f4f6f9; color: #333; }
-        .container { max-width: 600px; margin: auto; }
-        
-        /* 結餘大字卡 */
-        .balance-card { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 25px 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(30,60,114,0.25); margin-bottom: 20px; }
-        .balance-label { font-size: 14px; opacity: 0.8; letter-spacing: 1px; }
-        .balance-amount { font-size: 32px; font-weight: bold; margin-top: 5px; }
-        
-        /* 區塊標準卡片 */
-        .card { background: white; padding: 20px 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); margin-bottom: 20px; box-sizing: border-box; }
-        h2 { font-size: 18px; margin: 0 0 15px 0; color: #2c3e50; border-left: 4px solid #3498db; padding-left: 8px; }
-        
-        /* 表單元素樣式 */
-        .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
-        label { font-size: 14px; font-weight: 500; margin-bottom: 5px; color: #4a5568; }
-        input, select, textarea { padding: 12px; font-size: 16px; border: 1px solid #cbd5e0; border-radius: 8px; box-sizing: border-box; outline: none; background-color: #fff; }
-        input:focus, select:focus { border-color: #3498db; }
-        
-        /* 收支單選按鈕樣式 */
-        .type-selector { display: flex; gap: 10px; margin-bottom: 12px; }
-        .type-btn { flex: 1; text-align: center; padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-weight: bold; cursor: pointer; background: #fff; }
-        .type-btn.income.active { background-color: #2ec4b6; color: white; border-color: #2ec4b6; }
-        .type-btn.expense.active { background-color: #e74c3c; color: white; border-color: #e74c3c; }
-        
-        button.submit-btn { width: 100%; padding: 14px; font-size: 16px; font-weight: bold; background-color: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 4px rgba(52,152,219,0.2); }
-        button.submit-btn:active { background-color: #217dbb; }
-        
-        /* 日期區間檢索區 */
-        .filter-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .filter-row .form-group { flex: 1; margin-bottom: 0; }
-        
-        /* 歷史明細明細項目 */
-        .history-list { margin-top: 10px; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 5px; border-bottom: 1px solid #edf2f7; }
-        .history-item:last-child { border-bottom: none; }
-        .item-left { display: flex; flex-direction: column; gap: 4px; }
-        .item-title { font-weight: 600; font-size: 16px; }
-        .item-meta { font-size: 12px; color: #718096; }
-        .item-amount { font-weight: bold; font-size: 17px; }
-        .item-amount.income { color: #2ec4b6; }
-        .item-amount.expense { color: #e74c3c; }
-        
-        .status-toast { text-align: center; font-size: 14px; color: #718096; padding: 5px; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 25px 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(30,60,114,0.25);
+            margin-bottom: 20px;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+            padding-left: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #4a5568;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+            background-color: #fff;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #3498db;
+        }
+
+        .type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .type-btn {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #fff;
+            user-select: none;
+        }
+
+        .type-btn.income.active {
+            background-color: #2ec4b6;
+            color: white;
+            border-color: #2ec4b6;
+        }
+
+        .type-btn.expense.active {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(52,152,219,0.2);
+        }
+
+        button.submit-btn:active {
+            background-color: #217dbb;
+        }
+
+        button.submit-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .filter-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .history-list {
+            margin-top: 10px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 5px;
+            border-bottom: 1px solid #edf2f7;
+            gap: 10px;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 16px;
+            word-break: break-word;
+        }
+
+        .item-meta {
+            font-size: 12px;
+            color: #718096;
+            word-break: break-word;
+        }
+
+        .item-amount {
+            font-weight: bold;
+            font-size: 17px;
+            white-space: nowrap;
+        }
+
+        .item-amount.income {
+            color: #2ec4b6;
+        }
+
+        .item-amount.expense {
+            color: #e74c3c;
+        }
+
+        .status-toast {
+            text-align: center;
+            font-size: 14px;
+            color: #718096;
+            padding: 5px;
+        }
+
+        .error-detail {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #e74c3c;
+            word-break: break-word;
+        }
+
+        @media (max-width: 420px) {
+            .filter-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .filter-row .form-group {
+                margin-bottom: 12px;
+            }
+
+            .history-item {
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <!-- 結餘看版 -->
-        <div class="balance-card">
-            <div class="balance-label">📊 目前社費結餘</div>
-            <div class="balance-amount" id="balanceDisplay">$0</div>
+<div class="container">
+
+    <!-- 結餘看板 -->
+    <div class="balance-card">
+        <div class="balance-label">📊 目前社費結餘</div>
+        <div class="balance-amount" id="balanceDisplay">$0</div>
+    </div>
+
+    <!-- 記帳表單 -->
+    <div class="card">
+        <h2>✍️ 新增收支明細</h2>
+
+        <div class="type-selector">
+            <div class="type-btn income active" onclick="setRecordType('收入')">
+                📥 收入
+            </div>
+            <div class="type-btn expense" onclick="setRecordType('支出')">
+                📤 支出
+            </div>
         </div>
 
-        <!-- 記帳表單卡片 -->
-        <div class="card">
-            <h2>✍️ 新增收支明細</h2>
-            <div class="type-selector">
-                <div class="type-btn income active" onclick="setRecordType('收入')">📥 收入</div>
-                <div class="type-btn expense" onclick="setRecordType('支出')">📤 支出</div>
-            </div>
-            
-            <div class="form-group">
-                <label>選擇日期</label>
-                <input type="date" id="recordDate">
-            </div>
-            <div class="form-group">
-                <label id="reasonLabel">收費事由</label>
-                <input type="text" id="recordReason" placeholder="例如：第四季社費、贊助款...">
-            </div>
-            
-            <!-- 【已改版】：繳款人現已改為動態下拉選單 -->
-            <div class="form-group" id="payerGroup">
-                <label>繳款人</label>
-                <select id="recordPayer">
-                    <option value="">-- 請選擇社員 --</option>
-                    <!-- 社員名單將透過 JavaScript 動態載入至此 -->
-                    <option value="非社員/其他">非社員 / 其他</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>金額</label>
-                <input type="number" id="recordAmount" inputmode="numeric" placeholder="請輸入金額">
-            </div>
-            <div class="form-group">
-                <label>備註 (選填)</label>
-                <input type="text" id="recordNote" placeholder="如有其他補充說明...">
-            </div>
-            <button class="submit-btn" onclick="submitRecord()">儲存並上傳紀錄</button>
-            <div id="submitStatus" class="status-toast" style="margin-top: 10px; display: none;"></div>
+        <div class="form-group">
+            <label>選擇日期</label>
+            <input type="date" id="recordDate">
         </div>
 
-        <!-- 區間檢索卡片 -->
-        <div class="card">
-            <h2>🔍 依日期區間檢索細目</h2>
-            <div class="filter-row">
-                <div class="form-group">
-                    <label>起始日期</label>
-                    <input type="date" id="startDate" onchange="filterData()">
-                </div>
-                <div class="form-group">
-                    <label>結束日期</label>
-                    <input type="date" id="endDate" onchange="filterData()">
-                </div>
-            </div>
-            <div id="filterStatus" class="status-toast">連線資料庫中...</div>
-            <div class="history-list" id="historyList">
-                <!-- 檢索清單會渲染在此 -->
-            </div>
+        <div class="form-group">
+            <label id="reasonLabel">收費事由</label>
+            <input type="text" id="recordReason"
+                   placeholder="例如：第四季社費、贊助款...">
+        </div>
+
+        <div class="form-group" id="payerGroup">
+            <label>繳款人</label>
+            <select id="recordPayer">
+                <option value="">-- 請選擇社員 --</option>
+                <option value="非社員/其他">非社員 / 其他</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>金額</label>
+            <input type="number" id="recordAmount"
+                   inputmode="numeric"
+                   min="0"
+                   step="1"
+                   placeholder="請輸入金額">
+        </div>
+
+        <div class="form-group">
+            <label>備註 (選填)</label>
+            <input type="text" id="recordNote"
+                   placeholder="如有其他補充說明...">
+        </div>
+
+        <button class="submit-btn" id="submitButton" onclick="submitRecord()">
+            儲存並上傳紀錄
+        </button>
+
+        <div id="submitStatus"
+             class="status-toast"
+             style="margin-top:10px; display:none;">
         </div>
     </div>
 
-    <script>
-        // 💥 請在此替換為您從 Google Apps Script 複製來的網頁應用程式網址 💥
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzbXGa91-In2P8--N6WC7ecL81heTNancM4vJv0HsRaLVs8ev82AWAHNuv0QyWLXnKE/exec';
-        
-        let currentType = '收入';
-        let fullHistoryData = []; 
+    <!-- 日期區間檢索 -->
+    <div class="card">
+        <h2>🔍 依日期區間檢索細目</h2>
 
-        window.onload = function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('recordDate').value = today;
-            
-            const date = new Date();
-            const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
-            document.getElementById('startDate').value = firstDay;
-            document.getElementById('endDate').value = today;
+        <div class="filter-row">
+            <div class="form-group">
+                <label>起始日期</label>
+                <input type="date" id="startDate" onchange="filterData()">
+            </div>
 
-            fetchDataFromSheet();
+            <div class="form-group">
+                <label>結束日期</label>
+                <input type="date" id="endDate" onchange="filterData()">
+            </div>
+        </div>
+
+        <div id="filterStatus" class="status-toast">
+            正在連線資料庫...
+        </div>
+
+        <div class="history-list" id="historyList"></div>
+    </div>
+
+</div>
+
+<script>
+    /*
+     * =========================================================
+     * Google Apps Script Web App 網址
+     * =========================================================
+     */
+    const WEB_APP_URL =
+        'https://script.google.com/macros/s/AKfycbzbXGa91-In2P8--N6WC7ecL81heTNancM4vJv0HsRaLVs8ev82AWAHNuv0QyWLXnKE/exec';
+
+    let currentType = '收入';
+    let fullHistoryData = [];
+
+    /*
+     * =========================================================
+     * 網頁載入
+     * =========================================================
+     */
+    window.onload = function () {
+
+        // 今天
+        const today = getLocalDateString();
+
+        document.getElementById('recordDate').value = today;
+        document.getElementById('endDate').value = today;
+
+        // 本月第一天
+        const now = new Date();
+        const firstDay =
+            `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+
+        document.getElementById('startDate').value = firstDay;
+
+        // 開始讀取 Google 試算表
+        fetchDataFromSheet();
+    };
+
+
+    /*
+     * =========================================================
+     * 取得本地日期，避免 toISOString() 造成時區日期偏移
+     * =========================================================
+     */
+    function getLocalDateString() {
+
+        const date = new Date();
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+
+
+    /*
+     * =========================================================
+     * 收入 / 支出切換
+     * =========================================================
+     */
+    function setRecordType(type) {
+
+        currentType = type;
+
+        const incBtn = document.querySelector('.type-btn.income');
+        const expBtn = document.querySelector('.type-btn.expense');
+        const payerGroup = document.getElementById('payerGroup');
+        const reasonLabel = document.getElementById('reasonLabel');
+
+        if (type === '收入') {
+
+            incBtn.classList.add('active');
+            expBtn.classList.remove('active');
+
+            payerGroup.style.display = 'flex';
+            reasonLabel.innerText = '收費事由';
+
+        } else {
+
+            incBtn.classList.remove('active');
+            expBtn.classList.add('active');
+
+            payerGroup.style.display = 'none';
+            reasonLabel.innerText = '支出事由';
+        }
+    }
+
+
+    /*
+     * =========================================================
+     * 從 Google Apps Script 讀取資料
+     *
+     * 使用 JSONP：
+     * /exec?action=getData&callback=xxxxx
+     *
+     * 前提：
+     * Google Apps Script 的 doGet() 必須支援 callback。
+     * =========================================================
+     */
+    function fetchDataFromSheet() {
+
+        const status =
+            document.getElementById('filterStatus');
+
+        status.innerText =
+            '正在同步資料庫最新資訊...';
+
+        const callbackName =
+            'jsonp_' + Date.now() + '_' +
+            Math.floor(Math.random() * 100000);
+
+        let script = document.createElement('script');
+
+        let finished = false;
+
+        // Google 回傳資料後執行
+        window[callbackName] = function (result) {
+
+            if (finished) return;
+
+            finished = true;
+
+            try {
+
+                if (!result) {
+                    throw new Error('Google Apps Script 沒有回傳資料');
+                }
+
+                if (result.status === 'error') {
+                    throw new Error(
+                        result.message || 'Google Apps Script 回傳錯誤'
+                    );
+                }
+
+                // -------------------------
+                // 結餘
+                // -------------------------
+                const balance =
+                    Number(result.balance || 0);
+
+                document.getElementById('balanceDisplay').innerText =
+                    `$${balance.toLocaleString('zh-TW')}`;
+
+                // -------------------------
+                // 社員名單
+                // -------------------------
+                updateMemberDropdown(
+                    Array.isArray(result.members)
+                        ? result.members
+                        : []
+                );
+
+                // -------------------------
+                // 歷史紀錄
+                // -------------------------
+                fullHistoryData =
+                    Array.isArray(result.history)
+                        ? result.history
+                        : [];
+
+                filterData();
+
+                status.innerText =
+                    '📊 連線完成';
+
+            } catch (error) {
+
+                console.error(
+                    'Google 資料處理錯誤：',
+                    error
+                );
+
+                status.innerText =
+                    '❌ Google 資料格式錯誤';
+
+                showErrorDetail(error.message);
+            }
+
+            cleanupJsonp();
         };
 
-        function setRecordType(type) {
-            currentType = type;
-            const incBtn = document.querySelector('.type-btn.income');
-            const expBtn = document.querySelector('.type-btn.expense');
-            const payerGroup = document.getElementById('payerGroup');
-            const reasonLabel = document.getElementById('reasonLabel');
 
-            if (type === '收入') {
-                incBtn.classList.add('active');
-                expBtn.classList.remove('active');
-                payerGroup.style.display = 'flex';
-                reasonLabel.innerText = '收費事由';
-            } else {
-                incBtn.classList.remove('active');
-                expBtn.classList.add('active');
-                payerGroup.style.display = 'none'; 
-                reasonLabel.innerText = '支出事由';
+        /*
+         * Google JSONP 網址
+         */
+        const separator =
+            WEB_APP_URL.includes('?') ? '&' : '?';
+
+        script.src =
+            `${WEB_APP_URL}${separator}` +
+            `action=getData&callback=${encodeURIComponent(callbackName)}`;
+
+
+        /*
+         * 載入失敗
+         */
+        script.onerror = function () {
+
+            if (finished) return;
+
+            finished = true;
+
+            status.innerText =
+                '❌ 無法與 Google 試算表建立連線';
+
+            showErrorDetail(
+                '請檢查 Google Apps Script 網頁應用程式網址、部署權限，以及 doGet() 是否支援 JSONP。'
+            );
+
+            cleanupJsonp();
+        };
+
+
+        /*
+         * 超時
+         */
+        const timeoutId = setTimeout(function () {
+
+            if (finished) return;
+
+            finished = true;
+
+            status.innerText =
+                '❌ Google 試算表連線逾時';
+
+            showErrorDetail(
+                'Google Apps Script 在 15 秒內沒有回應。'
+            );
+
+            cleanupJsonp();
+
+        }, 15000);
+
+
+        function cleanupJsonp() {
+
+            clearTimeout(timeoutId);
+
+            if (script && script.parentNode) {
+                script.parentNode.removeChild(script);
             }
+
+            delete window[callbackName];
         }
-       // 完美繞過所有學校帳戶與網域 CORS 阻擋的動態對接版本
-function fetchDataFromSheet() {
-    document.getElementById('filterStatus').innerText = '正在同步資料庫最新資訊...';
-    
-    // 動態製造一個全域唯一的隨機函式名稱，防止多次查詢時發生衝突
-    const callbackName = 'jsonp_' + Math.round(100000 * Math.random());
-    
-    // 當 Google 成功把資料傳回來時，會主動呼叫這個全域功能
-    window[callbackName] = function(result) {
-        // 1. 渲染頂端大卡片的結餘金額
-        document.getElementById('balanceDisplay').innerText = `$${result.balance.toLocaleString()}`;
-        
-        // 2. 動態更新社員下拉選單（將 5 位社員的名字塞進去）
-        updateMemberDropdown(result.members);
-        
-        // 3. 渲染收支歷史紀錄
-        fullHistoryData = result.history;
-        filterData();
-        
-        // 4. 更新底部的連線文字狀態
-        document.getElementById('filterStatus').innerText = '📊 連線完成';
-        
-        // 執行完畢後自我銷毀，釋放手機網頁效能與記憶體空間
-        document.body.removeChild(script);
-        delete window[callbackName];
-    };
-
-    // 補齊這段：動態建立 script 標籤向 Google 索取資料
-    const script = document.createElement('script');
-    script.src = `${WEB_APP_URL}?action=getData&callback=${callbackName}`;
-    
-    script.onerror = function() {
-        document.getElementById('filterStatus').innerText = '❌ 無法與雲端資料庫建立連線';
-    };
-    
-    document.body.appendChild(script);
-}
 
 
-    // 關鍵做法：不使用 fetch，而是直接在網頁底部塞入一個臨時的 <script> 標籤外連至 Google 
-    const script = document.createElement('script');
-    script.src = `${WEB_APP_URL}?action=getData&callback=${callbackName}`;
-    
-    // 連線發生不可預期斷線時的防呆提示
-    script.onerror = function() {
-        document.getElementById('filterStatus').innerText = '❌ 無法與雲端資料庫建立連線，請確認網路環境';
-    };
-    
-    document.body.appendChild(script);
-}
+        document.body.appendChild(script);
+    }
 
 
-    // 透過動態建立 script 標籤的方式來讀取 Google 資料，這是最有效規避 CORS 阻擋的業界標準做法
-    const script = document.createElement('script');
-    script.src = `${WEB_APP_URL}?action=getData&callback=${callbackName}`;
-    
-    // 如果連線失敗的防呆警報
-    script.onerror = function() {
-        document.getElementById('filterStatus').innerText = '❌ 無法與雲端資料庫建立連線，請確認 API 發布權限';
-    };
-    
-    document.body.appendChild(script);
-}
+    /*
+     * =========================================================
+     * 顯示錯誤細節
+     * =========================================================
+     */
+    function showErrorDetail(message) {
+
+        let old =
+            document.getElementById('errorDetail');
+
+        if (!old) {
+
+            old = document.createElement('div');
+            old.id = 'errorDetail';
+            old.className = 'error-detail';
+
+            document
+                .getElementById('filterStatus')
+                .parentNode
+                .appendChild(old);
+        }
+
+        old.innerText = message || '';
+    }
 
 
-        // 新增：將後端傳來的名單塞入 Select 下拉選單中
-        function updateMemberDropdown(members) {
-            const selectElement = document.getElementById('recordPayer');
-            
-            // 保留預設的第一個選項與最後一個「其他」選項
-            selectElement.innerHTML = '<option value="">-- 請選擇社員 --</option>';
-            
-            if (members && members.length > 0) {
-                members.forEach(name => {
-                    const option = document.createElement('option');
-                    option.value = name;
-                    option.innerText = name;
-                    selectElement.appendChild(option);
+    /*
+     * =========================================================
+     * 更新社員下拉選單
+     * =========================================================
+     */
+    function updateMemberDropdown(members) {
+
+        const selectElement =
+            document.getElementById('recordPayer');
+
+        selectElement.innerHTML =
+            '<option value="">-- 請選擇社員 --</option>';
+
+        if (Array.isArray(members)) {
+
+            members.forEach(function (name) {
+
+                if (name === null ||
+                    name === undefined ||
+                    String(name).trim() === '') {
+                    return;
+                }
+
+                const option =
+                    document.createElement('option');
+
+                option.value = String(name);
+                option.innerText = String(name);
+
+                selectElement.appendChild(option);
+            });
+        }
+
+        const otherOption =
+            document.createElement('option');
+
+        otherOption.value =
+            '非社員/其他';
+
+        otherOption.innerText =
+            '非社員 / 其他';
+
+        selectElement.appendChild(otherOption);
+    }
+
+
+    /*
+     * =========================================================
+     * 日期區間篩選
+     * =========================================================
+     */
+    function filterData() {
+
+        const start =
+            document.getElementById('startDate').value;
+
+        const end =
+            document.getElementById('endDate').value;
+
+        const listArea =
+            document.getElementById('historyList');
+
+        if (!start || !end) {
+            return;
+        }
+
+        if (start > end) {
+
+            listArea.innerHTML =
+                '<div class="status-toast">⚠️ 起始日期不能晚於結束日期。</div>';
+
+            document.getElementById('filterStatus').innerText =
+                '日期範圍錯誤';
+
+            return;
+        }
+
+        const filtered =
+            fullHistoryData.filter(function (item) {
+
+                const itemDate =
+                    normalizeDate(item.date);
+
+                return itemDate >= start &&
+                       itemDate <= end;
+            });
+
+
+        if (filtered.length === 0) {
+
+            listArea.innerHTML =
+                '<div class="status-toast">' +
+                '此日期區間內暫無收支細目。' +
+                '</div>';
+
+            document.getElementById('filterStatus').innerText =
+                '查詢完成';
+
+            return;
+        }
+
+
+        let html = '';
+
+        filtered.forEach(function (item) {
+
+            const isIncome =
+                String(item.type) === '收入';
+
+            const sign =
+                isIncome ? '+' : '-';
+
+            const amount =
+                Number(item.amount || 0);
+
+            const payerInfo =
+                (isIncome && item.payer)
+                    ? ` ➔ 繳款人: ${escapeHtml(item.payer)}`
+                    : '';
+
+            const noteInfo =
+                item.note
+                    ? ` (${escapeHtml(item.note)})`
+                    : '';
+
+            const reason =
+                escapeHtml(item.reason || '');
+
+            const date =
+                escapeHtml(
+                    normalizeDate(item.date)
+                );
+
+
+            html += `
+                <div class="history-item">
+
+                    <div class="item-left">
+
+                        <div class="item-title">
+                            ${reason}${noteInfo}
+                        </div>
+
+                        <div class="item-meta">
+                            📅 ${date}${payerInfo}
+                        </div>
+
+                    </div>
+
+                    <div class="item-amount ${isIncome ? 'income' : 'expense'}">
+                        ${sign}$${amount.toLocaleString('zh-TW')}
+                    </div>
+
+                </div>
+            `;
+        });
+
+
+        listArea.innerHTML = html;
+
+        document.getElementById('filterStatus').innerText =
+            `📊 已檢索到 ${filtered.length} 筆明細`;
+    }
+
+
+    /*
+     * =========================================================
+     * 日期格式整理
+     * =========================================================
+     */
+    function normalizeDate(value) {
+
+        if (!value) return '';
+
+        // 已經是 YYYY-MM-DD
+        if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+            return String(value);
+        }
+
+        const date = new Date(value);
+
+        if (isNaN(date.getTime())) {
+            return String(value);
+        }
+
+        const year =
+            date.getFullYear();
+
+        const month =
+            String(date.getMonth() + 1).padStart(2, '0');
+
+        const day =
+            String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+
+
+    /*
+     * =========================================================
+     * HTML 安全處理
+     * =========================================================
+     */
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+
+    /*
+     * =========================================================
+     * 新增收支紀錄
+     *
+     * 注意：
+     * 這裡仍然使用原本的 POST API。
+     * Google Apps Script 後端必須有 doPost(e)。
+     * =========================================================
+     */
+    async function submitRecord() {
+
+        const date =
+            document.getElementById('recordDate').value;
+
+        const reason =
+            document.getElementById('recordReason').value.trim();
+
+        const payer =
+            document.getElementById('recordPayer').value;
+
+        const amount =
+            parseFloat(
+                document.getElementById('recordAmount').value
+            );
+
+        const note =
+            document.getElementById('recordNote').value.trim();
+
+        const statusBox =
+            document.getElementById('submitStatus');
+
+        const submitButton =
+            document.getElementById('submitButton');
+
+
+        // -------------------------
+        // 基本檢查
+        // -------------------------
+        if (!date ||
+            !reason ||
+            isNaN(amount) ||
+            amount <= 0) {
+
+            alert(
+                '請完整填寫日期、事由及正確的金額！'
+            );
+
+            return;
+        }
+
+
+        if (currentType === '收入' && !payer) {
+
+            alert('請選取繳款人！');
+
+            return;
+        }
+
+
+        statusBox.style.display = 'block';
+        statusBox.style.color = '#718096';
+
+        statusBox.innerText =
+            '⏳ 正在寫入雲端試算表...';
+
+        submitButton.disabled = true;
+
+
+        const payload = {
+
+            date: date,
+
+            type: currentType,
+
+            reason: reason,
+
+            payer:
+                currentType === '收入'
+                    ? payer
+                    : '',
+
+            amount: amount,
+
+            note: note
+        };
+
+
+        try {
+
+            const response =
+                await fetch(WEB_APP_URL, {
+
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type':
+                            'text/plain;charset=utf-8'
+                    },
+
+                    body:
+                        JSON.stringify(payload)
                 });
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
             }
-            
-            // 補上最後的備用選項
-            const otherOption = document.createElement('option');
-            otherOption.value = '非社員/其他';
-            otherOption.innerText = '非社員 / 其他';
-            selectElement.appendChild(otherOption);
+
+
+            const result =
+                await response.json();
+
+
+            if (result.status === 'success') {
+
+                statusBox.innerText =
+                    '✅ 紀錄上傳成功！';
+
+                statusBox.style.color =
+                    '#2ec4b6';
+
+
+                // 清空表單
+                document.getElementById(
+                    'recordReason'
+                ).value = '';
+
+                document.getElementById(
+                    'recordPayer'
+                ).value = '';
+
+                document.getElementById(
+                    'recordAmount'
+                ).value = '';
+
+                document.getElementById(
+                    'recordNote'
+                ).value = '';
+
+
+                // 重新讀取資料
+                setTimeout(
+                    fetchDataFromSheet,
+                    500
+                );
+
+
+            } else {
+
+                throw new Error(
+                    result.message ||
+                    'Google Apps Script 回傳失敗'
+                );
+            }
+
+
+        } catch (error) {
+
+            console.error(
+                '上傳錯誤：',
+                error
+            );
+
+            statusBox.innerText =
+                '❌ 寫入失敗';
+
+            statusBox.style.color =
+                '#e74c3c';
+
+            showErrorDetail(
+                '上傳錯誤：' + error.message
+            );
+
+        } finally {
+
+            submitButton.disabled = false;
         }
+    }
+</script>
 
-        function filterData() {
-            const start = document.getElementById('startDate').value;
-            const end = document.getElementById('endDate').value;
-            const listArea = document.getElementById('historyList');
-            
-            if (!start || !end) return;
-
-            const filtered = fullHistoryData.filter(item => item.date >= start && item.date <= end);
-            
-            if (filtered.length === 0) {
-                listArea.innerHTML = '<div class="status-toast">此日期區間內暫無收支細目。</div>';
-                document.getElementById('filterStatus').innerText = '查詢完成';
-                return;
-            }
-
-            let html = '';
-            filtered.forEach(item => {
-const isIncome = item.type === '收入';
-const sign = isIncome ? '+' : '-';
-const payerInfo = (isIncome && item.payer) ?  ➔ 繳款人: ${item.payer} : '';
-const noteInfo = item.note ?  (${item.note}) : '';
-html += <div class="history-item"> <div class="item-left"> <div class="item-title">${item.reason}${noteInfo}</div> <div class="item-meta">📅 ${item.date}${payerInfo}</div> </div> <div class="item-amount ${isIncome ? 'income' : 'expense'}"> ${sign}$${item.amount.toLocaleString()} </div> </div>;
-});
-listArea.innerHTML = html;
-document.getElementById('filterStatus').innerText = 📊 已檢索到 ${filtered.length} 筆明細;
-}
-async function submitRecord() {
-const date = document.getElementById('recordDate').value;
-const reason = document.getElementById('recordReason').value.trim();
-const payer = document.getElementById('recordPayer').value; // 👈 這裡拿到下拉選單選取的值
-const amount = parseFloat(document.getElementById('recordAmount').value);
-const note = document.getElementById('recordNote').value.trim();
-const statusBox = document.getElementById('submitStatus');
-if (!date || !reason || isNaN(amount) || amount <= 0) {
-alert('請完整填寫日期、事由及正確的金額！');
-return;
-}
-if (currentType === '收入' && !payer) {
-alert('請選取繳款人！');
-return;
-}
-statusBox.style.display = 'block';
-statusBox.innerText = '⏳ 正在寫入雲端試算表...';
-statusBox.style.color = '#718096';
-const payload = {
-date: date,
-type: currentType,
-reason: reason,
-payer: currentType === '收入' ? payer : '',
-amount: amount,
-note: note
-};
-try {
-const response = await fetch(WEB_APP_URL, {
-method: 'POST',
-body: JSON.stringify(payload)
-});
-const result = await response.json();
-if (result.status === 'success') {
-statusBox.innerText = '✅ 紀錄上傳成功！';
-statusBox.style.color = '#2ec4b6';
-document.getElementById('recordReason').value = '';
-document.getElementById('recordPayer').value = ''; // 重置選單
-document.getElementById('recordAmount').value = '';
-document.getElementById('recordNote').value = '';
-fetchDataFromSheet();
-} else {
-statusBox.innerText = '❌ 寫入失敗，請重新再試';
-statusBox.style.color = '#e74c3c';
-}
-} catch (error) {
-statusBox.innerText = '❌ 網路連線異常，上傳失敗';
-statusBox.style.color = '#e74c3c';
-}
-}
+</body>
+</html>
