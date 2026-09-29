@@ -155,27 +155,42 @@
                 reasonLabel.innerText = '支出事由';
             }
         }
+        // 全新 JSONP 連線版本：徹底解決跨網域 (CORS) 導致卡在連線中、連不上的問題
+function fetchDataFromSheet() {
+    document.getElementById('filterStatus').innerText = '正在同步資料庫最新資訊...';
+    
+    // 建立一個隨機的臨時函式名稱
+    const callbackName = 'jsonp_' + Math.round(100000 * Math.random());
+    
+    // 在全域動態註冊這個回呼函式，當 Google 回傳資料時會自動觸發它
+    window[callbackName] = function(result) {
+        // 1. 渲染結餘
+        document.getElementById('balanceDisplay').innerText = `$${result.balance.toLocaleString()}`;
+        
+        // 2. 動態更新社員下拉選單
+        updateMemberDropdown(result.members);
+        
+        // 3. 渲染收支歷史紀錄
+        fullHistoryData = result.history;
+        filterData();
+        
+        // 清理動態產生的標籤，維持網頁效能
+        document.body.removeChild(script);
+        delete window[callbackName];
+    };
 
-        // 從資料庫撈取結餘、明細，以及「新增的社員名單」
-        async function fetchDataFromSheet() {
-            document.getElementById('filterStatus').innerText = '正在同步資料庫最新資訊...';
-            try {
-                const response = await fetch(`${WEB_APP_URL}?action=getData`);
-                const result = await response.json();
-                
-                // 1. 渲染結餘
-                document.getElementById('balanceDisplay').innerText = `$${result.balance.toLocaleString()}`;
-                
-                // 2. 動態更新社員下拉選單
-                updateMemberDropdown(result.members);
-                
-                // 3. 渲染收支歷史紀錄
-                fullHistoryData = result.history;
-                filterData();
-            } catch (error) {
-                document.getElementById('filterStatus').innerText = '❌ 無法與雲端資料庫建立連線';
-            }
-        }
+    // 透過動態建立 script 標籤的方式來讀取 Google 資料，這是最有效規避 CORS 阻擋的業界標準做法
+    const script = document.createElement('script');
+    script.src = `${WEB_APP_URL}?action=getData&callback=${callbackName}`;
+    
+    // 如果連線失敗的防呆警報
+    script.onerror = function() {
+        document.getElementById('filterStatus').innerText = '❌ 無法與雲端資料庫建立連線，請確認 API 發布權限';
+    };
+    
+    document.body.appendChild(script);
+}
+
 
         // 新增：將後端傳來的名單塞入 Select 下拉選單中
         function updateMemberDropdown(members) {
